@@ -31,6 +31,7 @@ public class PollManager {
 
     public void addPoll(Poll poll){ 
         polls.put(maxPollId, poll);
+        poll.getCreator().addPolls(poll);
         poll.setPollID(maxPollId);
         maxPollId ++;
         

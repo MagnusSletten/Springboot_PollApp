@@ -1,53 +1,19 @@
-import { useState, useSyncExternalStore } from 'react';
-import './App.css'
-import { Poll, VoteOptions } from "./Components/Poll"; 
-import PollView from './Components/PollView'
-
-function CustomPoll():Poll  {
-  
-  const question = ""
-  const poll = new Poll(question);
-  
-  return poll;
-}
+import { Children } from "react";
+import { createBrowserRouter } from "react-router";
+import ReactDOM from "react-dom/client";
+import React from "react";
+import { RouterProvider } from "react-router-dom";
+import CreatePollComponent from './Components/CreatePollComponent'
+import { Outlet, Link } from "react-router-dom";
 
 
+export default function App() {
+    return (
+      <>
+        <h1>hello</h1>
+      
+      </>
+    )
 
-function App() {
-  const poll = CustomPoll();
-  const [response, setResponse] = useState(""); 
-
-  const sendPoll = async () => {
-  const url = 'http://localhost:8080/polls'
-  
-  try {
-  const res = await fetch(url, {
-  method: 'POST',
-  headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify(poll.toJSON())}); 
-  setResponse(await res.text()); 
-  }
-
-  catch(error) {
-    setResponse(error.message);
-  }
-  }
- 
-  return (
-    <>
-      <PollView poll={poll} />
-      <button
-      onClick={sendPoll}>
-      Send Poll</button>
-      <span className='backend-response'>{response}</span>
-    </>
-   
-
-  )
 
 }
-
-export default App
