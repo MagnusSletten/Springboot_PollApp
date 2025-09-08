@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.Model.Poll.Poll;
+import com.example.backend.Model.Poll.PollRequest;
 
 
 @RestController
@@ -18,7 +19,8 @@ import com.example.backend.Model.Poll.Poll;
 @RequestMapping("/polls")
 public class PollController {
     	HashMap<Integer,Poll> polls;
-        PollManager manager; 
+        PollManager manager;
+         
 
         public PollController(PollManager manager) {
             this.polls = new HashMap<>();
@@ -26,15 +28,9 @@ public class PollController {
         }
 
         @PostMapping
-        public String addPoll(@RequestBody Poll poll){ 
-            try {
-            manager.addPoll(poll);
-            return "Succesfully added poll with ID: " +poll.getPollID();
-            }
-            catch(Exception e) {
-                return "Error adding question";
-
-            }    
+        public Poll addPoll(@RequestBody PollRequest pollRequest){ 
+            Poll poll = manager.addPollFromRequest(pollRequest);
+            return poll; 
         }
 
         @GetMapping("/{pollID}")

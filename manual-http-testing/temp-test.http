@@ -1,4 +1,4 @@
-POST http://localhost:8080/polls
+POST http://localhost:8080/test/poll
 Content-Type: application/json
 
 {
@@ -7,7 +7,8 @@ Content-Type: application/json
   "voteOptions": [
       { "caption": "yes" },
       { "caption": "no" }
-    ],
-  "creator": "Magnus"
-}  
-
+  ],
+  "creator": {"userName": "Magnus"}
+    ,
+  "pollID" : 1
+}

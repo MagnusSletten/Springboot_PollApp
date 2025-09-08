@@ -10,14 +10,16 @@ import org.springframework.stereotype.Component;
 
 
 import com.example.backend.Model.User;
+import com.example.backend.Model.UserRequest;
 import com.example.backend.Model.Poll.Poll;
-import com.example.backend.Model.Poll.Vote;
+import com.example.backend.Model.Poll.PollRequest;
+import com.example.backend.Model.Poll.Vote.Vote;
+import com.example.backend.Model.Poll.Vote.VoteRequest;
 
 @Component
 public class PollManager {
     HashMap<Integer,Poll> polls;
-    HashMap<Integer,User> users;
-    HashMap<Integer,List<Vote>> votes;  
+    HashMap<String,User> users;
     
     Integer maxPollId = 1;
     Integer maxUserId = 1;  
@@ -25,16 +27,16 @@ public class PollManager {
     public PollManager() {
         this.polls = new HashMap<>();
         this.users = new HashMap<>(); 
-        this.votes = new HashMap<>();  
 
     }
 
-    public void addPoll(Poll poll){ 
+    public Poll addPollFromRequest(PollRequest pollRequest){
+        User user = users.get(pollRequest.getCreator()); 
+        Poll poll = pollRequest.toPoll(maxPollId, user);
+        user.addPolls(poll);
         polls.put(maxPollId, poll);
-        poll.getCreator().addPolls(poll);
-        poll.setPollID(maxPollId);
-        maxPollId ++;
-        
+        maxPollId++;     
+        return poll; 
     }
 
     public Poll getPoll(Integer poll_id){
@@ -50,38 +52,35 @@ public class PollManager {
         return users.values(); 
     }
 
-    public void addUser(User user){
-        this.users.put(maxUserId, user);
-        user.setUserId(maxUserId);
-        maxUserId ++;  
+    public User addUserFromRequest(UserRequest userRequest){
+      User user = userRequest.toUser();
+      users.put(userRequest.getUserName(), user);
+      return user; 
     }
 
     public List<Vote> getVotes(Integer pollID){
-        if(votes.keySet().contains(pollID)){
-            return votes.get(pollID);
+        if(polls.get(pollID).getVotes().contains(pollID)){
+            polls.get(pollID).getVotes();
         }
         throw new NoSuchElementException("No votes found for " + pollID);
         
     }
 
-    public String addVote(Integer pollId, Vote vote) {
-        boolean voted = false; 
-        if(userVoteExists(pollId, vote.getUserId())){
-            removeVote(pollId, vote.getUserId());
-            voted = true; 
+    public Vote addVote(VoteRequest voteRequest) {
+        User user = users.get(voteRequest.getUserName());
+        Poll poll = polls.get(voteRequest.getPollId());
+        
+        Vote vote = voteRequest.toVote(user, poll);
+
+        if (!user.hasVoted(poll.getPollID())){
+            poll.addVote(vote);
+
         }
-        List<Vote> pollVotes = votes.get(pollId);
-        if (pollVotes == null) {
-            pollVotes = new ArrayList<>();
-            votes.put(pollId, pollVotes);
+        else {
+            poll.changeVote(vote);
         }
-        pollVotes.add(vote);
-        if(!voted){
-            return "User with ID " + vote.getUserId().toString() + " has given a new vote"; 
-        }
-        else{
-            return "User with ID " + vote.getUserId().toString() + " has changed vote to "+ vote.getOptionId().toString(); 
-        }
+        return vote; 
+       
     }
        
     
@@ -94,7 +93,7 @@ public class PollManager {
 
     public Vote getUserVote(Integer pollID, Integer userId){
         for(Vote vote : this.getVotes(pollID)){
-            if(vote.getUserId().equals(userId)){
+            if(vote.getVoteId().equals(userId)){
                 return vote; 
             }
 
@@ -102,22 +101,8 @@ public class PollManager {
        throw new NoSuchElementException("This pollID not found in votes");
     }
 
-    public boolean userVoteExists(Integer pollID, Integer userId){
-        try {
-         getVotes(pollID);
-        } 
-        catch (NoSuchElementException e) {
-        return false;
-        }
-            
-        for(Vote vote : this.getVotes(pollID)){
-            if(vote.getUserId().equals(userId)){
-                return true; 
-            }
+    
 
-        }
-       return false; 
-    }
 
 
 }

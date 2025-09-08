@@ -21,17 +21,6 @@ import org.json.JSONException;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class PollControllerTest {
 
-    String pollJSONSTRING = """
-    {
-      "title": "Pizza preference",
-      "question": "Do you hate pizza?",
-      "voteOptions": [
-        { "caption": "yes" },
-        { "caption": "no" }
-      ],
-    }
-    """;
-   
 
     @LocalServerPort int port;
     RestClient client;
@@ -41,23 +30,23 @@ class PollControllerTest {
         client = RestClient.builder()
                 .baseUrl("http://localhost:" + port)
                 .build();
+        
     }
 
     @Test
     void createPollTest() throws JSONException{
-        var resp = createPoll(getExpectedPoll_1());
-        assertTrue(resp.getBody().contains("Succesfully")); 
+        sendUser();
+        var resp = createPoll(getPollRequest1());
+        assertTrue(resp.getBody().contains("pollID")); 
     }
 
     @Test
     void getPollTest() throws JSONException {
-        createPoll(getExpectedPoll_1());
-        String pollReturn = client.get().uri("/polls/1").retrieve() 
-	    .body(String.class);
-        JSONObject pollReturnJSon = new JSONObject(pollReturn);
-        assertTrue(pollReturnJSon.has("pollID"));
-        JSONObject pollReturnSimple = removeDynamicFields(pollReturnJSon);
-        JSONAssert.assertEquals(getExpectedPoll_1(), pollReturnSimple,true);  
+        sendUser();
+        ResponseEntity<String> pollReturn = createPoll(getPollRequest1());
+        JSONObject actual = new JSONObject(pollReturn.getBody());
+        assertTrue(actual.has("pollID"));
+        JSONAssert.assertEquals(getExpectedPoll_1(), actual,true);  
           
     }
 
@@ -73,6 +62,16 @@ class PollControllerTest {
     
         }
     JSONObject getExpectedPoll_1() throws JSONException{
+        JSONObject pollJSON = getPollRequest1();
+        pollJSON.put("pollID",1);
+        pollJSON.put("votes", new JSONArray());
+        pollJSON.put("publishedAt",JSONObject.NULL);
+        pollJSON.put("validUntil",JSONObject.NULL);
+
+        return pollJSON;
+    }
+
+      JSONObject getPollRequest1() throws JSONException{
         JSONObject pollJSON = new JSONObject();
 
         pollJSON.put("title", "Pizza preference");
@@ -82,17 +81,21 @@ class PollControllerTest {
         voteOptions.put(new JSONObject().put("caption", "yes"));
         voteOptions.put(new JSONObject().put("caption", "no"));
         pollJSON.put("voteOptions", voteOptions);
-        pollJSON.put("publishedAt",JSONObject.NULL);
-        pollJSON.put("validUntil",JSONObject.NULL);
+        pollJSON.put("creator","Magnus");
 
         return pollJSON;
     }
 
-    JSONObject removeDynamicFields(JSONObject poll){
-        poll.remove("pollID");
-      //  poll.remove("publishedAt");
-      //  poll.remove("validUntil");
-        return poll; 
+    public void sendUser() throws JSONException{
+        JSONObject user = new JSONObject();
+        user.put("userName", "Magnus");
+
+        var userResp = client.post().uri("/users")
+        .contentType(APPLICATION_JSON)
+        .body(user.toString())
+        .retrieve()
+        .toEntity(String.class);
+
     }
 
 

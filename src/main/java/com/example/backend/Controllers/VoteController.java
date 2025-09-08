@@ -9,10 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.Model.Poll.Poll;
-import com.example.backend.Model.Poll.Vote;
+import com.example.backend.Model.Poll.Vote.Vote;
+import com.example.backend.Model.Poll.Vote.VoteRequest;
 
 @RestController
-@RequestMapping("/vote")
+@RequestMapping("/votes")
 public class VoteController {
     PollManager pollManager;
 
@@ -21,17 +22,13 @@ public class VoteController {
     }
 
     @PostMapping("/")
-    public String addVote(@RequestBody Vote vote){ 
-        try {
-        String message = pollManager.addVote(vote.getPollId(),vote);  
-        return message;
+    public Vote addVote(@RequestBody VoteRequest voteRequest){ 
+        Vote vote = pollManager.addVote(voteRequest);  
+        return vote;
         }
-        catch(Exception e) {
-            return "Error adding vote" + e;
-
-        }    
-    }
-
-
-
+       
 }
+
+
+
+

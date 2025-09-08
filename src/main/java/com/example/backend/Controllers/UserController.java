@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.Model.User;
+import com.example.backend.Model.UserRequest;
 
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -27,9 +28,9 @@ public class UserController {
     }
 
     @PostMapping
-    public String addName(@RequestBody User user){
-        pollManager.addUser(user);
-        return "User added successfully:"+ user.getUserName() + "with email "+user.getEmail()+ "and userID: "+user.getUserId(); 
+    public User addUser(@RequestBody UserRequest userRequest){
+        User user = pollManager.addUserFromRequest(userRequest);
+        return user; 
     }
 
     @GetMapping

@@ -18,33 +18,25 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,  property = "pollID")
-public class Poll {
-    private Integer pollID; 
+public class PollRequest {
     private String title;
     private String question;
     private ArrayList<VoteOption> voteOptions = new ArrayList<>();
     private Instant publishedAt;
     private Instant validUntil;
-    @JsonIdentityReference(alwaysAsId = true)
-    private List<Vote> votes = new ArrayList<>();
+    private String creator;
 
-   @JsonIdentityReference(alwaysAsId = true)
-    private User creator;
-
-
-    
-    public void setCreator(User creator){
-        this.creator = creator;
-
+    public Poll toPoll(Integer pollId, User creator){
+    Poll poll = new Poll();
+    poll.setPollID(pollId);
+    poll.setCreator(creator);
+    poll.setQuestion(question);
+    poll.setVoteOptions(voteOptions);
+    poll.setTitle(title);
+    poll.setValidUntil(validUntil);
+    poll.setPublishedAt(publishedAt);
+    return poll; 
     }
 
-    public void addVote(Vote vote){
-        this.votes.add(vote);
-    }
-
-    public void changeVote(Vote vote){
-        votes.set(votes.indexOf(vote),vote); 
-    }
-    
 }
+
