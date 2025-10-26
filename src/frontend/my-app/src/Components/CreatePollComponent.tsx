@@ -39,7 +39,7 @@ function CreatePoll({  userName,
       
     const res = await fetch(BACKEND_URL+'/polls', {
       method: 'POST',
-      credentials: 'include', // sends cookies automatically
+      credentials: 'include', 
       headers: {
         'Content-Type': 'application/json',
          'X-XSRF-TOKEN': xsrf,

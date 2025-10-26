@@ -1,9 +1,9 @@
 ### Get CSRF
 # @name csrf
-GET http://localhost:8080/auth/csrf
+GET http://localhost:8080/polling/backend/auth/csrf
 
 ### Create poll (send BOTH header and cookie)
-POST http://localhost:8080/polls
+POST http://localhost:8080/polling/backend/polls
 Content-Type: application/json
 X-XSRF-TOKEN: {{csrf.response.body.token}}
 Cookie: XSRF-TOKEN={{csrf.response.body.token}}

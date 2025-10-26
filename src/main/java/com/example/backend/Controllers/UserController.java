@@ -1,6 +1,7 @@
 package com.example.backend.Controllers;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,10 +29,12 @@ public class UserController {
         this.pollManager = pollManager;
     }
 
+
     @GetMapping("/{userName}")
     public User getUser(@PathVariable("userName") String userName) {
         return pollManager.getUser(userName).get();
     }
+
 
 
     @PostMapping

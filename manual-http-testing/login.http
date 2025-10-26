@@ -1,4 +1,9 @@
-POST http://localhost:8080/users/auth/login
+### Get CSRF
+# @name csrf
+GET http://localhost:8080/polling/backend/auth/csrf
+
+### (If using form login) Log in to get JSESSIONID
+POST http://localhost:8080/polling/backend/users/auth/login
 Content-Type: application/x-www-form-urlencoded
 
-username=Magnus&password=abcd 
+username=admin&password=s

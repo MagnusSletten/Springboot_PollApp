@@ -21,11 +21,40 @@ export default function LogInComponent({
   const [err, setErr] = useState<string | null>(null);
   const [polls, setPolls] = useState<any[]>([]);
   const [showPolls, setShowPolls] = useState(false);
+  const [users, setUsers] = useState<Array<{ id:number; username:string; roles?:string[] }>>([]);
+
+  const [showUsers, setShowUsers] = useState(false);
+
+const fetchUsers = async () => {
+  setErr(null);
+  try {
+    const xsrf = getCookieRaw('XSRF-TOKEN');
+
+    const res = await fetch(`${BACKEND_URL}/users`, {
+      credentials: "include", // send JSESSIONID
+      headers: {
+         'X-XSRF-TOKEN': xsrf,   
+      }     
+    });
+
+    if (res.status === 401) throw new Error("Not logged in");
+    if (res.status === 403) throw new Error("Admin only");
+    if (!res.ok)  throw new Error(`Failed to load users (${res.status})`);
+
+    const data = await res.json();
+    setUsers(data);
+    setShowUsers(true);
+  } catch (e: any) {
+    setErr(e.message ?? "Could not load users");
+    setShowUsers(false);
+  }
+};
 
   const login = async () => {
     setErr(null);
     setLoading(true);
     try {
+      
       const body = new URLSearchParams({
         username: userName,
         password: password,
@@ -108,7 +137,10 @@ return (
       </div>
     )}
     {err && <div className="error">{err}</div>}
+    {loginStatus && (
+    <>
     <div style={{ marginTop: "1rem" }}>
+    
       <button className="pollButton" onClick={fetchMyPolls}>
         Show My Polls
       </button>
@@ -128,6 +160,28 @@ return (
         </ul>
       )}
     </div>
+    <div style={{ marginTop: "1rem" }}>
+  <button className="pollButton" onClick={fetchUsers}>
+    Show Users (admin)
+  </button>
+  {showUsers && (
+    <ul className="poll-list" style={{ marginTop: "0.5rem" }}>
+      {users.map(u => (
+        <li key={u.id} className="poll-item">
+          <span className="poll-title">{u.username}</span>
+          {u.roles?.length ? <small> — {u.roles.join(", ")}</small> : null}
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
+</>
+    
+  )
+
+    
+    }
+
   </div>
 );
 }

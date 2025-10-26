@@ -22,12 +22,15 @@ services:
         condition: service_started
     build: 
       context: .
-      dockerfile: docker/backend.dockerfile
+      dockerfile: docker/pollservice
     image: magnussletten/pollservice:latest 
     ports:
       - "8080:8080"
+    env_file:
+      - .env 
     environment:
       REDIS_HOST: "redis"
       REDIS_PORT: "6379"
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: "5672"
+      

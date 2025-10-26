@@ -14,7 +14,7 @@ public class PollRequest {
     private String title;
     private String question;
     private ArrayList<VoteOption> voteOptions = new ArrayList<>();
-    private Instant publishedAt;
+    private Instant publishedAt = Instant.now();
     private Instant validUntil;
     private String creator;
 
@@ -30,7 +30,9 @@ public class PollRequest {
         }
 
         poll.setTitle(title);
-        poll.setValidUntil(validUntil);
+        if (validUntil != null) {
+            poll.setValidUntil(validUntil);
+        }
         poll.setPublishedAt(publishedAt);
         return poll;
     }

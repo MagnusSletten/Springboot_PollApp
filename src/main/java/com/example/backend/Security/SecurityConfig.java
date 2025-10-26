@@ -56,15 +56,23 @@ SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
             )
         )
         .authorizeHttpRequests(auth -> auth
+            .requestMatchers(HttpMethod.GET, "/users")
+            .hasAuthority("Admin")
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-            .requestMatchers("/polling/backend/users/auth/**").permitAll()
-            .requestMatchers("/polling/backend/auth/csrf").permitAll()
-            .requestMatchers(HttpMethod.GET,  "/polling/backend/polls/**").permitAll()
-            .requestMatchers(HttpMethod.POST, "/polling/backend/users").permitAll()
-            .requestMatchers(HttpMethod.POST, "/polling/backend/polls/**").authenticated()
+            .requestMatchers("/users/auth/**").permitAll()
+            .requestMatchers("/auth/csrf").permitAll()
+            .requestMatchers(HttpMethod.POST, "/users").permitAll()
+             .requestMatchers(HttpMethod.GET,  "/polls/**").permitAll()
+            .requestMatchers(HttpMethod.POST, "/polls").authenticated()
             .requestMatchers(HttpMethod.DELETE, "/polls/**").authenticated()
-            .anyRequest().permitAll()
+             .anyRequest().authenticated() 
         )
+        .exceptionHandling(e -> e
+    .authenticationEntryPoint(
+        new org.springframework.security.web.authentication.HttpStatusEntryPoint(
+            org.springframework.http.HttpStatus.UNAUTHORIZED))
+    .accessDeniedHandler((req, res, ex) -> res.setStatus(403))
+)
         .formLogin(f -> f
             .loginProcessingUrl("/users/auth/login")
             .successHandler((req, res, auth) -> {
