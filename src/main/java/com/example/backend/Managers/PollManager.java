@@ -14,11 +14,11 @@ import com.example.backend.Cache.VoteCache;
 import com.example.backend.MessageBrokers.Listener;
 import com.example.backend.MessageBrokers.PollBroker;
 import com.example.backend.Model.Poll.Poll;
-import com.example.backend.Model.Poll.PollRequest;
+import com.example.backend.Model.Poll.PollDTO;
 import com.example.backend.Model.User.User;
-import com.example.backend.Model.User.UserRequest;
+import com.example.backend.Model.User.UserDTO;
 import com.example.backend.Model.Vote.Vote;
-import com.example.backend.Model.Vote.VoteRequest;
+import com.example.backend.Model.Vote.VoteDTO;
 import com.example.backend.Repositories.PollRepository;
 import com.example.backend.Repositories.UserRepository;
 import com.example.backend.Repositories.VoteRepository;
@@ -39,7 +39,7 @@ public class PollManager implements Listener {
     private final SecurityConfig securityConfig;
 
     @Transactional
-    public Poll addPollFromRequest(PollRequest pollRequest) throws NoSuchElementException {
+    public Poll addPollFromRequest(PollDTO pollRequest) throws NoSuchElementException {
         Optional<User> userOpt = userRepo.findByUsername(pollRequest.getCreator());
         if (userOpt.isPresent()) {
             User user = userOpt.get();
@@ -78,25 +78,25 @@ public class PollManager implements Listener {
 
     }
 
-    public List<Poll> getPollsByUserName(String username){
+    public List<Poll> getPollsByUserName(String username) {
         return pollRepo.findByCreatedByUsername(username);
 
     }
-    public List<Poll> getPolls(){
-        return pollRepo.findAll(); 
+
+    public List<Poll> getPolls() {
+        return pollRepo.findAll();
 
     }
 
-
     @Transactional
-    public User addUserFromRequest(UserRequest userRequest) throws Exception {
+    public User addUserFromRequest(UserDTO userRequest) throws Exception {
         User user = userRequest.toUser();
         user.setPassword(securityConfig.passwordEncoder().encode(user.getPassword()));
         userRepo.save(user);
         return user;
     }
 
-    public Boolean matchUserPasswords(UserRequest userRequest) {
+    public Boolean matchUserPasswords(UserDTO userRequest) {
         try {
             return securityConfig.passwordEncoder().matches(userRequest.getPassword(),
                     getUser(userRequest.getUsername()).get().getPassword());
@@ -137,15 +137,15 @@ public class PollManager implements Listener {
     }
 
     @Transactional
-    public Vote addVoteWithUser(VoteRequest request) {
+    public Vote addVoteWithUser(VoteDTO request) {
         User user = userRepo.findByUsername(request.getUserName()).get();
         Integer id = request.getPollId();
-        
+
         Poll poll = getPoll(id).get();
         Instant now = Instant.now();
         if (now.isBefore(poll.getPublishedAt()) || now.isAfter(poll.getValidUntil())) {
-        throw new IllegalStateException("Voting is closed for this poll");
-    }
+            throw new IllegalStateException("Voting is closed for this poll");
+        }
         if (voteCache.isCached(poll)) {
             voteCache.removeVotes(poll);
         }
@@ -171,7 +171,7 @@ public class PollManager implements Listener {
     }
 
     @Transactional
-    public Vote addVoteAnonymous(VoteRequest request) {
+    public Vote addVoteAnonymous(VoteDTO request) {
         Poll poll = getPoll(request.getPollId()).get();
         if (voteCache.isCached(poll)) {
             voteCache.removeVotes(poll);
@@ -182,7 +182,7 @@ public class PollManager implements Listener {
     }
 
     @Transactional
-    public Vote addVote(VoteRequest request) {
+    public Vote addVote(VoteDTO request) {
         if (request.hasUsername()) {
             addVoteWithUser(request);
         } else {
@@ -214,7 +214,7 @@ public class PollManager implements Listener {
     @Override
     public void onEvent(String message) {
         System.out.println(message);
-        VoteRequest voteRequest = VoteRequest.fromJson(message);
+        VoteDTO voteRequest = VoteDTO.fromJson(message);
         try {
             if (voteRequest.hasUsername()) {
                 addVoteWithUser(voteRequest);
@@ -235,7 +235,5 @@ public class PollManager implements Listener {
     public void logout(User user) {
         loginCache.logOut(user);
     }
-
-
 
 }

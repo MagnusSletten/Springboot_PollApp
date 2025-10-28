@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.backend.Managers.PollManager;
 
 import com.example.backend.Model.Vote.Vote;
-import com.example.backend.Model.Vote.VoteRequest;
+import com.example.backend.Model.Vote.VoteDTO;
 
 @RestController
 @CrossOrigin
@@ -29,7 +29,7 @@ public class VoteController {
     }
 
     @PostMapping("/{pollID}/votes")
-    public ResponseEntity<VoteRequest> addVote(@RequestBody VoteRequest voteRequest) throws Exception {
+    public ResponseEntity<VoteDTO> addVote(@RequestBody VoteDTO voteRequest) throws Exception {
         pollManager.addVote(voteRequest);
         try {
             return ResponseEntity.ok(voteRequest);

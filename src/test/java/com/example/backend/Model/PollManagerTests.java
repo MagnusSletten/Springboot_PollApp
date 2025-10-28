@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.example.backend.Managers.PollManager;
-import com.example.backend.Model.Poll.PollRequest;
+import com.example.backend.Model.Poll.PollDTO;
 import com.example.backend.Model.Poll.VoteOption;
-import com.example.backend.Model.User.UserRequest;
-import com.example.backend.Model.Vote.VoteRequest;
+import com.example.backend.Model.User.UserDTO;
+import com.example.backend.Model.Vote.VoteDTO;
 import com.example.backend.Repositories.PollRepository;
 import com.example.backend.Repositories.UserRepository;
 import com.example.backend.Repositories.VoteRepository;
@@ -37,7 +37,7 @@ public class PollManagerTests {
     voteRepo.deleteAll();
     pollRepo.deleteAll();        
     userRepo.deleteAll();
-    UserRequest user = new UserRequest(); 
+    UserDTO user = new UserDTO(); 
     user.setUsername("Peter");
     user.setPassword("a");
     
@@ -48,7 +48,7 @@ public class PollManagerTests {
         
     }
 
-    PollRequest poll = new PollRequest();
+    PollDTO poll = new PollDTO();
     poll.setCreator("Peter");
     VoteOption yesOption = new VoteOption();
     yesOption.setCaption("yes");
@@ -66,7 +66,7 @@ public class PollManagerTests {
     @Test
     void addVotesWithoutUser(){
         Integer pollId = manager.getLatestPollId().get(); 
-        VoteRequest vote = new VoteRequest();
+        VoteDTO vote = new VoteDTO();
         vote.setPollId(pollId);
         vote.setPresentationOrder(1);
         assert(manager.getVotes(pollId).size() == 0);
@@ -82,7 +82,7 @@ public class PollManagerTests {
     @Test
     void addVotesWithUser(){
         Integer pollId = manager.getLatestPollId().get(); 
-        VoteRequest vote = new VoteRequest();
+        VoteDTO vote = new VoteDTO();
         vote.setPollId(pollId);
         vote.setPresentationOrder(1);
         vote.setUserName("Peter");
@@ -102,7 +102,7 @@ public class PollManagerTests {
     @Transactional
     void addVotesWithUserDeletePoll(){
         Integer pollId = manager.getLatestPollId().get(); 
-        VoteRequest vote = new VoteRequest();
+        VoteDTO vote = new VoteDTO();
         vote.setPollId(pollId);
         vote.setPresentationOrder(1);
         vote.setUserName("Peter");
@@ -120,7 +120,7 @@ public class PollManagerTests {
     @Test
     void changeVote(){
         Integer pollId = manager.getLatestPollId().get();
-        VoteRequest vote = new VoteRequest();
+        VoteDTO vote = new VoteDTO();
         vote.setPollId(pollId);
         vote.setPresentationOrder(1);
         vote.setUserName("Peter");

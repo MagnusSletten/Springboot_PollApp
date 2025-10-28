@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.backend.Managers.PollManager;
 import com.example.backend.Model.Poll.Poll;
 import com.example.backend.Model.User.User;
-import com.example.backend.Model.User.UserRequest;
+import com.example.backend.Model.User.UserDTO;
 
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -29,16 +29,13 @@ public class UserController {
         this.pollManager = pollManager;
     }
 
-
     @GetMapping("/{userName}")
     public User getUser(@PathVariable("userName") String userName) {
         return pollManager.getUser(userName).get();
     }
 
-
-
     @PostMapping
-    public ResponseEntity<User> addUser(@RequestBody UserRequest userRequest) {
+    public ResponseEntity<User> addUser(@RequestBody UserDTO userRequest) {
 
         try {
             User user = pollManager.addUserFromRequest(userRequest);

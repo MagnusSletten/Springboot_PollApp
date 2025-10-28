@@ -8,9 +8,11 @@ import com.example.backend.Model.User.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/*Simplified Poll class that can be turned into a full Poll objects. Improves API behaviour. */
+
 @Data
 @NoArgsConstructor
-public class PollRequest {
+public class PollDTO {
     private String title;
     private String question;
     private ArrayList<VoteOption> voteOptions = new ArrayList<>();
@@ -37,8 +39,8 @@ public class PollRequest {
         return poll;
     }
 
-    public static PollRequest fromPoll(Poll poll) {
-        PollRequest request = new PollRequest();
+    public static PollDTO fromPoll(Poll poll) {
+        PollDTO request = new PollDTO();
         request.setTitle(poll.getTitle());
         request.setQuestion(poll.getQuestion());
         request.setPublishedAt(poll.getPublishedAt());

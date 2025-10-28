@@ -109,8 +109,8 @@ public class Poll {
         }
     }
 
-    public PollRequest toPollRequest() {
-        PollRequest request = new PollRequest();
+    public PollDTO toPollRequest() {
+        PollDTO request = new PollDTO();
         request.setTitle(this.getTitle());
         request.setQuestion(this.getQuestion());
         request.setPublishedAt(this.getPublishedAt());

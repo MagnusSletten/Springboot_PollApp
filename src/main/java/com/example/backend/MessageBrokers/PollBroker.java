@@ -2,7 +2,7 @@ package com.example.backend.MessageBrokers;
 
 import org.springframework.stereotype.Component;
 
-import com.example.backend.Model.Vote.VoteRequest;
+import com.example.backend.Model.Vote.VoteDTO;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -13,7 +13,7 @@ public class PollBroker implements PollMessageBroker {
 
     private static final String EXCHANGE_NAME = "poll";
 
-    public void sendVote(Integer pollId, VoteRequest vote) throws Exception {
+    public void sendVote(Integer pollId, VoteDTO vote) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
         var host = System.getenv().getOrDefault("RABBITMQ_HOST", "rabbitmq");
         var port = Integer.parseInt(System.getenv().getOrDefault("RABBITMQ_PORT", "5672"));

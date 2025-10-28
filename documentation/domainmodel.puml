@@ -1,0 +1,18 @@
+@startuml Use-Cases
+actor RegisteredUser as ru 
+actor Admin 
+actor AnonymousUser as ur 
+
+component pollservice{
+    (Login)
+    (User Management)
+    (Vote)
+}
+
+ru --> (Login)
+Admin --> (Login)
+ru --> (Vote)
+Admin --> (Vote)
+ur --> (Vote)
+Admin --> (User Management)
+@enduml

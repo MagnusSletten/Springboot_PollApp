@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.Managers.PollManager;
 import com.example.backend.Model.Poll.Poll;
-import com.example.backend.Model.Poll.PollRequest;
+import com.example.backend.Model.Poll.PollDTO;
 import com.example.backend.Model.User.User;
 
 @RestController
@@ -37,7 +37,7 @@ public class PollController {
     }
 
     @PostMapping
-    public Poll addPoll(@RequestBody PollRequest pollRequest) {
+    public Poll addPoll(@RequestBody PollDTO pollRequest) {
         Poll poll = manager.addPollFromRequest(pollRequest);
         return poll;
     }
@@ -64,22 +64,17 @@ public class PollController {
             throw e;
         }
 
-
-        
     }
 
     @GetMapping
-    public ResponseEntity<List<Poll>> getPolls(
-                @RequestParam(value = "user", required = false) String username) {
-            List<Poll> polls;
-            if (username != null) {
-                polls = manager.getPollsByUserName(username);
-            } else {
-                polls = manager.getPolls();
-            }
-            return ResponseEntity.ok(polls);
+    public ResponseEntity<List<Poll>> getPolls(@RequestParam(value = "user", required = false) String username) {
+        List<Poll> polls;
+        if (username != null) {
+            polls = manager.getPollsByUserName(username);
+        } else {
+            polls = manager.getPolls();
         }
-
-
+        return ResponseEntity.ok(polls);
+    }
 
 }

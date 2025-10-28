@@ -14,9 +14,11 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import lombok.Data;
 
+/*Simplified Vote class that can be turned into full Vote objects. Improves API behaviour. */
+
 @Data
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "voteId")
-public class VoteRequest {
+public class VoteDTO {
     Integer voteId;
     Instant publishedAt = Instant.now();
     String userName;
@@ -62,10 +64,10 @@ public class VoteRequest {
         }
     }
 
-    public static VoteRequest fromJson(String json) {
+    public static VoteDTO fromJson(String json) {
         ObjectMapper mapper = initJackson();
         try {
-            return mapper.readValue(json, VoteRequest.class);
+            return mapper.readValue(json, VoteDTO.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to deserialize JSON to VoteRequest", e);
         }
